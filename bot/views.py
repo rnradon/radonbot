@@ -13,13 +13,26 @@ VERIFY_TOKEN = "2318934571"
 
 
 convos = { 
-         'whatsup': ["""Chilllllling with you. Type quotes to hear in some quotes.""",
-         			 "Enjoying my life bruh! Type quotes to hear in some quotes."""], 
-         'whatareyoudoing': ["""Chilling with you. :) Type quotes to hear in some quotes.""",
-         			 "Enjoying my life bruh! Type quotes to hear in some quotes."""],
-         'quotes':["""Type happy - for mood lightening quotes, life lessons - for some life lesson quotes, friendship - to get some friendship quotes """]
-         }
+         'hi': ["Hi!! Type happy - for mood lightening quotes, inspirational - for some life lesson quotes, friendship - to get some friendship quotes "],
+         
+         'quotes': ["Type happy-inspirational-friendship to get the quotes"],
+         
+         'happy': 
+         ["Be happy for this moment. This moment is your life.",
+                   "The most important thing is to enjoy your life - to be happy - it's all that matters.",
+                   "I just find myself happy with the simple things. Appreciating the blessings God gave me."], 
 
+         'inspirational': 
+         ["The best preparation for tomorrow is doing your best today.",
+                     "Put your heart, mind, and soul into even your smallest acts. This is the secret of success.",
+                     "Keep your face always toward the sunshine - and shadows will fall behind you."],
+
+          'friendship' : 
+          ["Friends show their love in times of trouble, not in happiness.",
+           "The greatest gift of life is friendship, and I have received it.",
+           "There is nothing on this earth more to be prized than true friendship."
+            ],
+}
 
 
 def post_facebook_message(fbid, recevied_message):           
@@ -32,7 +45,7 @@ def post_facebook_message(fbid, recevied_message):
             quote_text = random.choice(convos[token])
             break
     if not quote_text:
-        quote_text = "I didn't understand! Type happy - sad - life lesson - friendship to get the qutes"
+        quote_text = "I didn't understand! Type happy-inspirational-friendship to get the quotes"
 
 
 
