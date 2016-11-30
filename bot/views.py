@@ -1,3 +1,6 @@
+from django.shortcuts import render
+
+# Create your views here.
 
 import json, requests, random, re
 from pprint import pprint
@@ -12,17 +15,13 @@ PAGE_ACCESS_TOKEN = "EAAC7hsC2C0sBAOdnesyZAKMZAhRZC9EvVxW9j1RscX7TZByH2ZA9WFnUyq
 VERIFY_TOKEN = "2318934571"
 
 
-convos = { 
-         'hi': ["Hi!! Type happy - for mood lightening quotes, inspirational - for some life lesson quotes, friendship - to get some friendship quotes "],
-         
-         'quotes': ["Type happy-inspirational-friendship to get the quotes"],
-         
+quotes = { 
          'happy': 
          ["Be happy for this moment. This moment is your life.",
                    "The most important thing is to enjoy your life - to be happy - it's all that matters.",
                    "I just find myself happy with the simple things. Appreciating the blessings God gave me."], 
 
-         'inspirational': 
+         'inspiration': 
          ["The best preparation for tomorrow is doing your best today.",
                      "Put your heart, mind, and soul into even your smallest acts. This is the secret of success.",
                      "Keep your face always toward the sunshine - and shadows will fall behind you."],
@@ -34,29 +33,67 @@ convos = {
             ],
 }
 
+convos = {
+    'hi': ["Hi!! B)", 
+           """Hey there, you ain't using whatsapp :P""", 
+           "Hey Pudding",
+           ],
+         
+}
+
+convos_overhead = {
+    'quotes' : """Type happy or inspiration or friendship to get happy/inspirational/friendship quotes""",
+    'jokes' : "JOKE MESSAGE",
+    'quote' : """Type 'happy' or 'inspiration' or 'friendship' to get happy/inspirational/friendship quotes""",
+    'joke' : "JOKE MESSAGE",
+}
+
 
 def post_facebook_message(fbid, recevied_message):           
     
     # Remove all punctuations, lower case the text and split it based on space
     tokens = re.sub(r"[^a-zA-Z0-9\s]",' ',recevied_message).lower().split()
-    quote_text = ''
+    send_text = ''
+    flag = ''
     for token in tokens:
         if token in convos:
-            quote_text = random.choice(convos[token])
+            flag = "overhead_message"
+            send_text = random.choice(convos[token])
             break
-    if not quote_text:
-        quote_text = "I didn't understand! Type happy-inspirational-friendship to get the quotes"
+
+        elif token in convos_overhead:
+            send_text = convos_overhead[token]
+            pprint(convos_overhead[token])
+            break
+
+        elif token in quotes:
+            flag = "overhead_message"
+            send_text = random.choice(quotes[token])
+            break
+        
+        # elif token in quotes and flag != "quotes":
+        #     send_text = """Type 'quotes' to get some quotes or 'jokes' to have some jokes"""
+    if not send_text:
+        flag = "marega"
+        send_text = "I didn't understand! Type happy-inspirational-friendship to get the quotes"
 
 
 
-    # user_details_url = "https://graph.facebook.com/v2.6/%s"%fbid 
+    # user_details_url = "https://graph.facebook.com/v2.6/%s"%fbid
     # user_details_params = {'fields':'first_name,last_name,profile_pic', 'access_token':'EAAC7hsC2C0sBAOdnesyZAKMZAhRZC9EvVxW9j1RscX7TZByH2ZA9WFnUyqmy9ywvBXZBVHq9Nvu9SZBk6vfutctQuvhqcSIQ6IMyrPbcBDvj5gQzOSIl01JS2FnKEA4ylbP35pNedZBkHIGFKO9d0nZBVaA37W6CHyqYFRtD96EZBLAwZDZD'} 
     # user_details = requests.get(user_details_url, user_details_params).json() 
-    # quote_text = 'Yo '+user_details['first_name']+'..! ' + quote_text
+    # for key in user_details.keys(): 
+    #     pprint(key)
+    # # pprint(user_details['first_name'])
+    # send_text = 'Yo '+ user_details['first_name'] + '..! ' + send_text
 
-    post_message_url = 'https://graph.facebook.com/v2.6/me/messages?access_token=EAAC7hsC2C0sBAOdnesyZAKMZAhRZC9EvVxW9j1RscX7TZByH2ZA9WFnUyqmy9ywvBXZBVHq9Nvu9SZBk6vfutctQuvhqcSIQ6IMyrPbcBDvj5gQzOSIl01JS2FnKEA4ylbP35pNedZBkHIGFKO9d0nZBVaA37W6CHyqYFRtD96EZBLAwZDZD' 
-    response_msg = json.dumps({"recipient":{"id":fbid}, "message":{"text":quote_text}})
+    post_message_url = 'https://graph.facebook.com/v2.6/me/messages?access_token=%s'%PAGE_ACCESS_TOKEN
+    response_msg = json.dumps({"recipient":{"id":fbid}, "message":{"text":send_text}})
     status = requests.post(post_message_url, headers={"Content-Type": "application/json"},data=response_msg)
+    if flag == "overhead_message":
+        flag = ''
+        response_msg = json.dumps({"recipient":{"id":fbid}, "message":{"text":"""Type 'quotes' to get some quotes or 'jokes' to have some jokes"""}})
+        status = requests.post(post_message_url, headers={"Content-Type": "application/json"},data=response_msg)  
     pprint(status.json())
 
 
