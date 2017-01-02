@@ -41,13 +41,26 @@ convos = {
          
 }
 
-convos_overhead = {
-    'quotes' : """Type happy or inspiration or friendship to get happy/inspirational/friendship quotes""",
-    'jokes' : "JOKE MESSAGE",
-    'quote' : """Type 'happy' or 'inspiration' or 'friendship' to get happy/inspirational/friendship quotes""",
-    'joke' : "JOKE MESSAGE",
+convos_end = {
+	'bye': ["Bbye buddy! See ya :D",
+			"Jaa na velle!! :/"],
+	'tata': ["Bbye buddy! See ya :D",
+			"Jaa na velle!! :/"],
 }
 
+convos_overhead = {
+    'quotes' : """Type happy or inspiration or friendship to get happy/inspiration/friendship quotes""",
+}
+
+joke_lines = {
+    'jokes' : ["""Life is like toilet paper, you're either on a roll or taking shit from some asshole.""",
+               """You know you're ugly when it comes to a group picture and they hand you the camera.""",
+               """ My wife and I were happy for twenty years. Then we met.""",
+               """Isn't it great to live in the 21st century? Where deleting history has become more important than making it.""",
+               """You're not fat, you're just... easier to see.""",
+               """Politicians and diapers have one thing in common. They should both be changed regularly, and for the same reason.""",
+               ]
+}
 
 def post_facebook_message(fbid, recevied_message):           
     
@@ -55,15 +68,19 @@ def post_facebook_message(fbid, recevied_message):
     tokens = re.sub(r"[^a-zA-Z0-9\s]",' ',recevied_message).lower().split()
     send_text = ''
     flag = ''
+    greeting_img = ''
+
+            
     for token in tokens:
         if token in convos:
             flag = "overhead_message"
+            greeting_img = "true"
             send_text = random.choice(convos[token])
             break
 
         elif token in convos_overhead:
             send_text = convos_overhead[token]
-            pprint(convos_overhead[token])
+            # pprint(convos_overhead[token])
             break
 
         elif token in quotes:
@@ -71,11 +88,19 @@ def post_facebook_message(fbid, recevied_message):
             send_text = random.choice(quotes[token])
             break
         
+        elif token in joke_lines:
+            flag = "overhead_message"
+            send_text = random.choice(joke_lines[token])
+            break
+
+        elif token in convos_end:
+            send_text = random.choice(convos_end[token])
+            break
         # elif token in quotes and flag != "quotes":
         #     send_text = """Type 'quotes' to get some quotes or 'jokes' to have some jokes"""
     if not send_text:
         flag = "marega"
-        send_text = "I didn't understand! Type happy-inspirational-friendship to get the quotes"
+        send_text = """I didn't understand! Type 'quotes' to get some quotes or 'jokes' to get cracked up"""
 
 
 
@@ -92,11 +117,13 @@ def post_facebook_message(fbid, recevied_message):
     status = requests.post(post_message_url, headers={"Content-Type": "application/json"},data=response_msg)
     if flag == "overhead_message":
         flag = ''
-        response_msg = json.dumps({"recipient":{"id":fbid}, "message":{"text":"""Type 'quotes' to get some quotes or 'jokes' to have some jokes"""}})
-        status = requests.post(post_message_url, headers={"Content-Type": "application/json"},data=response_msg)  
+        response_msg = json.dumps({"recipient":{"id":fbid}, "message":{"text":"""Type 'quotes' to get some quotes or 'jokes' to get cracked up"""}})
+        status = requests.post(post_message_url, headers={"Content-Type": "application/json"},data=response_msg) 
+    # if greeting_img == "true":
+    #     greeting_img = ''
+    #     response_img = json.dumps({"recipient":{"id":fbid}, "message":{"attachment":{"type":"image","payload":{"url":"http://www.imagesbuddy.com/images/199/hi-friend-chicken-graphic.jpg"}}}})
+    #     status = requests.post(post_message_url, headers={"Content-Type": "application/json"},data=response_img) 
     pprint(status.json())
-
-
 class RadonBotView(generic.View):
     def get(self, request, *args, **kwargs):
         if self.request.GET['hub.verify_token'] == VERIFY_TOKEN:

@@ -36,6 +36,7 @@ ALLOWED_HOSTS = ['647756dd.ngrok.io',
 				 'acbbfc07.ngrok.io',
 				 '5809b8a1.ngrok.io',
 				 '21f7ee3b.ngrok.io',
+                 'aa9a3425.ngrok.io',
 					]
 
 
@@ -117,7 +118,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
